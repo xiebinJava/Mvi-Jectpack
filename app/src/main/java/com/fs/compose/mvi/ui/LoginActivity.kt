@@ -24,6 +24,7 @@ class LoginActivity : ComponentActivity() {
     sealed class UserIntent : UiEvent {
         object UserLogin : UserIntent()
         object CreateAccount : UserIntent()
+
     }
 
 
