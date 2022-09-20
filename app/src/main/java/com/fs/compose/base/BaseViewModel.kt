@@ -9,7 +9,15 @@ interface UiState
 
 interface UiEvent
 
-interface UiEffect
+/**
+ * 状态向下流动、事件向上流动的这种模式称为单向数据流 (UDF)。这种模式对应用架构的影响如下：
+
+    ViewModel 会存储并公开界面要使用的状态。界面状态是经过 ViewModel 转换的应用数据。
+    界面会向 ViewModel 发送用户事件通知。
+    ViewModel 会处理用户操作并更新状态。
+    更新后的状态将反馈给界面以进行呈现。
+    系统会对导致状态更改的所有事件重复上述操作。
+ */
 
 abstract class BaseViewModel<State: UiState, Event: UiEvent> : ViewModel() {
 
@@ -22,11 +30,6 @@ abstract class BaseViewModel<State: UiState, Event: UiEvent> : ViewModel() {
     // 对外接口使用不可变版本
     val uiState = _uiState.asStateFlow()
 
-    // 页面状态变更的 “副作用”，类似一次性事件，不需要重放的状态变更（例如 Toast）
-//    private val _effect = MutableSharedFlow<Effect>()
-
-    // 对外接口使用不可变版本
-//    val effect = _effect.asSharedFlow()
 
     // 页面的事件操作，对应于 MVI 模式的 Intent
     private val _event = MutableSharedFlow<Event>()
@@ -60,14 +63,6 @@ abstract class BaseViewModel<State: UiState, Event: UiEvent> : ViewModel() {
     protected fun setState(newState: State) {
         _uiState.value = newState
     }
-//
-//    /**
-//     * 副作用
-//     */
-//    protected fun setEffect(effect: Effect) {
-//        viewModelScope.launch {
-//            _effect.emit(effect)
-//        }
-//    }
+
 
 }

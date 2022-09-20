@@ -21,17 +21,19 @@ class LoginActivity : ComponentActivity() {
     private var loginViewModel: LoginViewModel = LoginViewModel()
 
     //定义用户intent
+    //Kotlin中的密封类的出现，在于它定义了一种受限的类继承结构，可以保证我们写出更安全的代码。
     sealed class UserIntent : UiEvent {
         object UserLogin : UserIntent()
         object CreateAccount : UserIntent()
+
 
     }
 
 
     sealed class LoginUiState : UiState {
 
-        object Idle : LoginUiState()
-        object Loading : LoginUiState()
+        object Idle : LoginUiState() // 单例模式
+        object Loading : LoginUiState() // 单例模式
         data class Users(val user: List<User>) : LoginUiState()
         data class CreateAccount(val user: User?) : LoginUiState()
         data class Error(val error: String?) : LoginUiState()
