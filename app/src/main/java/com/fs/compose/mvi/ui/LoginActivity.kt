@@ -30,15 +30,6 @@ class LoginActivity : ComponentActivity() {
     }
 
 
-    sealed class LoginUiState : UiState {
-
-        object Idle : LoginUiState() // 单例模式
-        object Loading : LoginUiState() // 单例模式
-        data class Users(val user: List<User>) : LoginUiState()
-        data class CreateAccount(val user: User?) : LoginUiState()
-        data class Error(val error: String?) : LoginUiState()
-
-    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {

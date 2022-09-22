@@ -2,6 +2,8 @@ package com.fs.compose.mvi.ui
 
 import androidx.lifecycle.viewModelScope
 import com.fs.compose.base.BaseViewModel
+import com.fs.compose.base.UiState
+import com.fs.compose.mvi.data.model.User
 import com.fs.compose.mvi.data.repository.LoginRepository
 import kotlinx.coroutines.launch
 
@@ -16,10 +18,23 @@ import kotlinx.coroutines.launch
 
  */
 
-class LoginViewModel : BaseViewModel<LoginActivity.LoginUiState, LoginActivity.UserIntent>() {
 
-    override fun createInitialState(): LoginActivity.LoginUiState {
-        return LoginActivity.LoginUiState.Idle
+
+sealed class LoginUiState : UiState {
+
+    object Idle : LoginUiState() // 单例模式
+    object Loading : LoginUiState() // 单例模式
+    data class Users(val user: List<User>) : LoginUiState()
+    data class CreateAccount(val user: User?) : LoginUiState()
+    data class Error(val error: String?) : LoginUiState()
+
+}
+
+
+class LoginViewModel : BaseViewModel<LoginUiState, LoginActivity.UserIntent>() {
+
+    override fun createInitialState(): LoginUiState {
+        return LoginUiState.Idle
     }
 
     override fun handleEvent(event: LoginActivity.UserIntent) {
@@ -33,11 +48,11 @@ class LoginViewModel : BaseViewModel<LoginActivity.LoginUiState, LoginActivity.U
 
     private fun createAccountAction() {
         viewModelScope.launch {
-            setState(LoginActivity.LoginUiState.Loading)
+            setState(LoginUiState.Loading)
             try {
-                setState(LoginActivity.LoginUiState.CreateAccount(LoginRepository.getCreateAccount()))
+                setState(LoginUiState.CreateAccount(LoginRepository.getCreateAccount()))
             } catch (e: Exception) {
-                setState(LoginActivity.LoginUiState.Error("错误"))
+                setState(LoginUiState.Error("错误"))
             }
         }
 
@@ -47,11 +62,11 @@ class LoginViewModel : BaseViewModel<LoginActivity.LoginUiState, LoginActivity.U
     private fun loginAction() {
         viewModelScope.launch {
 
-            setState(LoginActivity.LoginUiState.Loading)
+            setState(LoginUiState.Loading)
             try {
-                setState(LoginActivity.LoginUiState.Users(LoginRepository.getLogin()))
+                setState(LoginUiState.Users(LoginRepository.getLogin()))
             } catch (e: Exception) {
-                setState(LoginActivity.LoginUiState.Error("错误"))
+                setState(LoginUiState.Error("错误"))
             }
 
         }
