@@ -1,14 +1,24 @@
 package com.fs.compose.mvi.data.model
 
-import com.squareup.moshi.Json
 
 data class User(
-    @Json(name = "id")
-    val id: Int = 0,
-    @Json(name = "first_name")
-    val name: String = "",
-    @Json(name = "email")
-    val email: String = "",
-    @Json(name = "avator")
-    val avator: String = ""
+    val `data`: List<Data>,
+    val page: Int,
+    val per_page: Int,
+    val support: Support,
+    val total: Int,
+    val total_pages: Int
+)
+
+data class Data(
+    val avatar: String,
+    val email: String,
+    val first_name: String,
+    val id: Int,
+    val last_name: String
+)
+
+data class Support(
+    val text: String,
+    val url: String
 )

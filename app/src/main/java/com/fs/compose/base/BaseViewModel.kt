@@ -2,8 +2,10 @@ package com.fs.compose.base
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.util.*
 
 interface UiState
 
@@ -24,6 +26,8 @@ abstract class BaseViewModel<State: UiState, Event: UiEvent> : ViewModel() {
     // 初始状态
     private val initialState: State by lazy { createInitialState() }
 
+
+
     // 页面需要的状态，对应于 MVI 模式的 ViewState
     private val _uiState = MutableStateFlow<State>(initialState)
 
@@ -31,12 +35,19 @@ abstract class BaseViewModel<State: UiState, Event: UiEvent> : ViewModel() {
     val uiState = _uiState.asStateFlow()
 
 
+
+    private val userIntent = Channel<Event>(Channel.UNLIMITED)
     // 页面的事件操作，对应于 MVI 模式的 Intent
-    private val _event = MutableSharedFlow<Event>()
+//    private val _event = MutableSharedFlow<Event>()
+
 
     init {
         viewModelScope.launch {
-            _event.collect {
+//            _event.collect {
+//                handleEvent(it)
+//            }
+
+            userIntent.consumeAsFlow().collect {
                 handleEvent(it)
             }
         }
@@ -53,7 +64,8 @@ abstract class BaseViewModel<State: UiState, Event: UiEvent> : ViewModel() {
      */
     fun sendEvent(event: Event) {
         viewModelScope.launch {
-            _event.emit(event)
+//            _event.emit(event)
+            userIntent.send(event)
         }
     }
 
@@ -63,6 +75,8 @@ abstract class BaseViewModel<State: UiState, Event: UiEvent> : ViewModel() {
     protected fun setState(newState: State) {
         _uiState.value = newState
     }
+
+
 
 
 }
