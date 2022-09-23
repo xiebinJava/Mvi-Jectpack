@@ -18,7 +18,7 @@ import javax.inject.Inject
  *
  *
  */
-class FormatDataUseCase @Inject constructor(private val loginRepository: LoginRepository) {
+class FormatDataUseCase @Inject constructor(private val loginRepository: LoginRepository ) {
 
 
      suspend operator fun invoke(date: Calendar): String {

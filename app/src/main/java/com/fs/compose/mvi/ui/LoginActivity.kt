@@ -11,6 +11,9 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.lifecycleScope
 import com.fs.compose.base.UiEvent
+import com.fs.compose.mvi.data.repository.LoginDataSource
+import com.fs.compose.mvi.data.repository.LoginRepository
+import com.fs.compose.mvi.domain.FormatDataUseCase
 import com.fs.compose.ui.theme.ComposeTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -20,11 +23,18 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class LoginActivity : ComponentActivity() {
 
-//    private val loginViewModel: LoginViewModel = LoginViewModel(
-//        LoginRepository(LoginDataSource()),
-//        FormatDataUseCase(LoginRepository(LoginDataSource()))
-//    )
 
+    /**
+     * 如果不用Hilt注入框架需要写成这样
+     */
+//    private val loginDataSource = LoginDataSource()
+//    private val loginRepository = LoginRepository(loginDataSource)
+//    private val formatDataUseCase  = FormatDataUseCase(loginRepository)
+//    private val loginViewModel = LoginViewModel(loginRepository,formatDataUseCase)
+
+    /**
+     * 用了Hilt依赖注入框架
+     */
     private val loginViewModel:LoginViewModel by viewModels<LoginViewModel>()
 
 
@@ -81,6 +91,7 @@ class LoginActivity : ComponentActivity() {
 
 
     private fun observeViewModel() {
+
         lifecycleScope.launch {
             loginViewModel.uiState.collect {
                 when (it) {
