@@ -1,4 +1,4 @@
-package com.fs.compose.mvi.data.model
+package com.fs.compose.login.data.model
 
 
 data class User(

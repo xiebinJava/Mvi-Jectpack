@@ -1,12 +1,12 @@
-package com.fs.compose.mvi.ui
+package com.fs.compose.login.ui
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.fs.compose.base.BaseViewModel
 import com.fs.compose.base.UiState
-import com.fs.compose.mvi.data.model.Data
-import com.fs.compose.mvi.data.model.User
-import com.fs.compose.mvi.data.repository.LoginRepository
-import com.fs.compose.mvi.domain.FormatDataUseCase
+import com.fs.compose.login.data.model.User
+import com.fs.compose.login.data.repository.LoginRepository
+import com.fs.compose.login.domain.FormatDataUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.util.*
@@ -49,6 +49,7 @@ class LoginViewModel @Inject constructor (
         viewModelScope.launch {
             val today = Calendar.getInstance()
             val formatDataUseCase1 = formatDataUseCase(today)
+            Log.e("xiebin",formatDataUseCase1.toString())
         }
 
     }

@@ -1,9 +1,11 @@
-package com.fs.compose.mvi.data.repository
+package com.fs.compose.login.data.repository
 
-import com.fs.compose.mvi.data.api.LoginApiService
-import com.fs.compose.mvi.data.model.Data
-import com.fs.compose.mvi.data.model.User
-import com.fs.compose.net.HttpRequest
+import com.fs.compose.login.data.api.LoginApiService
+import com.fs.compose.login.data.model.User
+import com.fs.compose.net.RetrofitBuild
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
@@ -23,19 +25,21 @@ import javax.inject.Inject
 
 该层公开的数据应该是不可变的
  */
+class LoginRemoteDataSource @Inject constructor() {
 
-class LoginDataSource @Inject constructor()  {
-
-    private val loginApiService: LoginApiService by lazy {
-        HttpRequest.getService()
+    private val loginApi: LoginApiService by lazy {
+        RetrofitBuild.apiService
+    }
+    private val ioDispatcher: CoroutineDispatcher by lazy {
+        Dispatchers.IO
     }
 
-     suspend fun getLogin() :User{
-       return loginApiService.getUsers()
+    suspend fun getLogin(): User = withContext(ioDispatcher) {
+        loginApi.getUsers()
     }
 
-     suspend fun getCreateAccount() : User {
-        return loginApiService.getCreateAccount()
+    suspend fun getCreateAccount(): User = withContext(ioDispatcher) {
+        loginApi.getCreateAccount()
     }
 
 

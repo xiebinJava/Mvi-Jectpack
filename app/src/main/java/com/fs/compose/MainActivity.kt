@@ -9,7 +9,7 @@ import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.fs.compose.mvi.ui.LoginActivity
+import com.fs.compose.login.ui.LoginActivity
 import com.fs.compose.ui.theme.ComposeTheme
 
 class MainActivity : ComponentActivity() {

@@ -30,7 +30,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".mvi.ui.LoginActivity"/>
+        <activity android:name=".login.ui.LoginActivity"/>
     </application>
 
 </manifest>

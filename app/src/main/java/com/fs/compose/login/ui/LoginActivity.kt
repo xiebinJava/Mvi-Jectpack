@@ -1,4 +1,4 @@
-package com.fs.compose.mvi.ui
+package com.fs.compose.login.ui
 
 import android.os.Bundle
 import android.util.Log
@@ -11,9 +11,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.lifecycleScope
 import com.fs.compose.base.UiEvent
-import com.fs.compose.mvi.data.repository.LoginDataSource
-import com.fs.compose.mvi.data.repository.LoginRepository
-import com.fs.compose.mvi.domain.FormatDataUseCase
 import com.fs.compose.ui.theme.ComposeTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -35,7 +32,7 @@ class LoginActivity : ComponentActivity() {
     /**
      * 用了Hilt依赖注入框架
      */
-    private val loginViewModel:LoginViewModel by viewModels<LoginViewModel>()
+    private val loginViewModel:LoginViewModel by viewModels()
 
 
 
