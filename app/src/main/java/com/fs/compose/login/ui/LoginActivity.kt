@@ -5,12 +5,22 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
 import com.fs.compose.base.UiEvent
+import com.fs.compose.base.ViewModelFactory
+import com.fs.compose.cart.data.repository.CartRemoteDataSource
+import com.fs.compose.cart.data.repository.CartRepository
+import com.fs.compose.cart.domain.FormatDataCartUseCase
+import com.fs.compose.login.data.repository.LoginRemoteDataSource
+import com.fs.compose.login.data.repository.LoginRepository
+import com.fs.compose.login.domain.FormatDataUseCase
 import com.fs.compose.ui.theme.ComposeTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -18,22 +28,28 @@ import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
-class LoginActivity : ComponentActivity() {
+class LoginActivity : AppCompatActivity() {
 
-
-    /**
-     * 如果不用Hilt注入框架需要写成这样
-     */
-//    private val loginDataSource = LoginDataSource()
-//    private val loginRepository = LoginRepository(loginDataSource)
-//    private val formatDataUseCase  = FormatDataUseCase(loginRepository)
-//    private val loginViewModel = LoginViewModel(loginRepository,formatDataUseCase)
 
     /**
      * 用了Hilt依赖注入框架
      */
     private val loginViewModel:LoginViewModel by viewModels()
 
+    /**
+     * 没用Hilt依赖注入框架
+     */
+//    private val loginViewModel: LoginViewModel by lazy {
+//        ViewModelProviders.of(
+//            this, ViewModelFactory(
+//                LoginRepository(LoginRemoteDataSource()), FormatDataUseCase(
+//                    LoginRepository(LoginRemoteDataSource()),
+//                    CartRepository(CartRemoteDataSource()),
+//                    FormatDataCartUseCase(CartRepository(CartRemoteDataSource()))
+//                )
+//            )
+//        )[LoginViewModel::class.java]
+//    }
 
 
     //定义用户intent

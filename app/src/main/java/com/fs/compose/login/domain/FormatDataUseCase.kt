@@ -1,6 +1,7 @@
 package com.fs.compose.login.domain
 
 import com.fs.compose.cart.data.repository.CartRepository
+import com.fs.compose.cart.domain.FormatDataCartUseCase
 import com.fs.compose.login.data.repository.LoginRepository
 import java.util.*
 import javax.inject.Inject
@@ -19,12 +20,19 @@ import javax.inject.Inject
  *
  *
  */
-class FormatDataUseCase @Inject constructor(private val loginRepository: LoginRepository ,private val cartRepository: CartRepository) {
+class FormatDataUseCase @Inject constructor(
+    private val loginRepository: LoginRepository,
+    private val cartRepository: CartRepository,
+    private val formatDataCartUseCase: FormatDataCartUseCase
+) {
 
-
-     suspend operator fun invoke(date: Calendar): String {
+    /**
+     * kotlin类默认含有invoke()方法，并且可以通过operator关键字重载，
+     * 可以采用原始调用方式：class.invoke(···)；kotlin允许简易调用：class()
+     */
+    suspend operator fun invoke(date: Calendar): String {
         val name = loginRepository.getCreateAccount().data[0].first_name
-         val email = cartRepository.getCart().data[0].email
-         return "$name  $email"
+        val email = cartRepository.getCart().data[0].email
+        return "$name  $email"
     }
 }
