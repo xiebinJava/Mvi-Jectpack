@@ -40,7 +40,7 @@ class LoginViewModel @Inject constructor (
     private val loginRepository: LoginRepository,
     private val formatDataUseCase: FormatDataUseCase
 ) :
-    BaseViewModel<LoginUiState, LoginActivity.UserIntent>() {
+    BaseViewModel<LoginUiState, LoginActivity.UserEvent>() {
 
     /**
      * 处理数据
@@ -58,11 +58,18 @@ class LoginViewModel @Inject constructor (
         return LoginUiState.Idle
     }
 
-    override fun handleEvent(event: LoginActivity.UserIntent) {
-        when (event) {
-            is LoginActivity.UserIntent.UserLogin -> loginAction()
 
-            is LoginActivity.UserIntent.CreateAccount -> createAccountAction()
+    /**
+     * Android架构指南中没有写这个
+     * 目的：进一步解耦，方便viewModel对事件的统一处理
+     * 简单的页面可以不使用此方式进行分发直接用viewmodel调用方法
+     * 复杂的页面，需要对事件进行分发，方便后期bug定位
+     */
+    override fun handleEvent(event: LoginActivity.UserEvent) {
+        when (event) {
+            is LoginActivity.UserEvent.UserLogin -> loginAction()
+
+            is LoginActivity.UserEvent.CreateAccount -> createAccountAction()
         }
 
     }

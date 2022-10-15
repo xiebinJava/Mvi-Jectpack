@@ -26,32 +26,12 @@ abstract class BaseViewModel<State: UiState, Event: UiEvent> : ViewModel() {
     // 初始状态
     private val initialState: State by lazy { createInitialState() }
 
-
-
     // 页面需要的状态，对应于 MVI 模式的 ViewState
     private val _uiState = MutableStateFlow<State>(initialState)
-
     // 对外接口使用不可变版本
     val uiState = _uiState.asStateFlow()
 
 
-
-    private val userIntent = Channel<Event>(Channel.UNLIMITED)
-    // 页面的事件操作，对应于 MVI 模式的 Intent
-//    private val _event = MutableSharedFlow<Event>()
-
-
-    init {
-        viewModelScope.launch {
-//            _event.collect {
-//                handleEvent(it)
-//            }
-
-            userIntent.consumeAsFlow().collect {
-                handleEvent(it)
-            }
-        }
-    }
 
     // 初始状态
     protected abstract fun createInitialState(): State
@@ -64,8 +44,7 @@ abstract class BaseViewModel<State: UiState, Event: UiEvent> : ViewModel() {
      */
     fun sendEvent(event: Event) {
         viewModelScope.launch {
-//            _event.emit(event)
-            userIntent.send(event)
+            handleEvent(event)
         }
     }
 

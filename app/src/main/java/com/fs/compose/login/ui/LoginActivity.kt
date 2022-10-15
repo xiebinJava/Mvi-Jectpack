@@ -2,7 +2,6 @@ package com.fs.compose.login.ui
 
 import android.os.Bundle
 import android.util.Log
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -10,20 +9,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
 import com.fs.compose.base.UiEvent
-import com.fs.compose.base.ViewModelFactory
-import com.fs.compose.cart.data.repository.CartRemoteDataSource
-import com.fs.compose.cart.data.repository.CartRepository
-import com.fs.compose.cart.domain.FormatDataCartUseCase
-import com.fs.compose.login.data.repository.LoginRemoteDataSource
-import com.fs.compose.login.data.repository.LoginRepository
-import com.fs.compose.login.domain.FormatDataUseCase
 import com.fs.compose.ui.theme.ComposeTheme
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 
@@ -34,7 +23,7 @@ class LoginActivity : AppCompatActivity() {
     /**
      * 用了Hilt依赖注入框架
      */
-    private val loginViewModel:LoginViewModel by viewModels()
+    private val loginViewModel: LoginViewModel by viewModels()
 
     /**
      * 没用Hilt依赖注入框架
@@ -52,13 +41,12 @@ class LoginActivity : AppCompatActivity() {
 //    }
 
 
+
     //定义用户intent
     //Kotlin中的密封类的出现，在于它定义了一种受限的类继承结构，可以保证我们写出更安全的代码。
-    sealed class UserIntent : UiEvent {
-        object UserLogin : UserIntent()
-        object CreateAccount : UserIntent()
-
-
+    sealed class UserEvent : UiEvent {
+        object UserLogin : UserEvent()
+        object CreateAccount : UserEvent()
     }
 
 
@@ -91,20 +79,20 @@ class LoginActivity : AppCompatActivity() {
     private fun doLogin() {
 
         lifecycleScope.launch {
-            loginViewModel.sendEvent(UserIntent.UserLogin)
+            loginViewModel.sendEvent(UserEvent.UserLogin)
         }
     }
 
     private fun doCreateAccount() {
         lifecycleScope.launch {
 
-            loginViewModel.sendEvent(UserIntent.CreateAccount)
+            loginViewModel.sendEvent(UserEvent.CreateAccount)
         }
     }
 
 
     private fun observeViewModel() {
-
+        //lifecycleScope只能在Activity、Fragment中使用，会绑定Activity和Fragment的生命周期
         lifecycleScope.launch {
             loginViewModel.uiState.collect {
                 when (it) {
@@ -123,7 +111,6 @@ class LoginActivity : AppCompatActivity() {
                     }
                     else -> {}
                 }
-
             }
         }
     }
