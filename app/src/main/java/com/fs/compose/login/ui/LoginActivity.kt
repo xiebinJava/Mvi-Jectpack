@@ -9,10 +9,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.fs.compose.base.UiEvent
 import com.fs.compose.ui.theme.ComposeTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 
@@ -24,22 +29,6 @@ class LoginActivity : AppCompatActivity() {
      * 用了Hilt依赖注入框架
      */
     private val loginViewModel: LoginViewModel by viewModels()
-
-    /**
-     * 没用Hilt依赖注入框架
-     */
-//    private val loginViewModel: LoginViewModel by lazy {
-//        ViewModelProviders.of(
-//            this, ViewModelFactory(
-//                LoginRepository(LoginRemoteDataSource()), FormatDataUseCase(
-//                    LoginRepository(LoginRemoteDataSource()),
-//                    CartRepository(CartRemoteDataSource()),
-//                    FormatDataCartUseCase(CartRepository(CartRemoteDataSource()))
-//                )
-//            )
-//        )[LoginViewModel::class.java]
-//    }
-
 
 
     //定义用户intent
@@ -94,22 +83,22 @@ class LoginActivity : AppCompatActivity() {
     private fun observeViewModel() {
         //lifecycleScope只能在Activity、Fragment中使用，会绑定Activity和Fragment的生命周期
         lifecycleScope.launch {
-            loginViewModel.uiState.collect {
-                when (it) {
-                    is LoginUiState.Idle -> {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                loginViewModel.uiState.map {
+                    it.loding
+                }.distinctUntilChanged().collect {
+                    Log.e("xiebin1", it.toString())
+                }
+            }
+        }
 
-                    }
-                    is LoginUiState.Loading -> {
-                        Log.e("xiebin", "loding")
-                    }
 
-                    is LoginUiState.UsersInfo -> {
-                        Log.e("xiebin", it.user?.data!![0].first_name)
-                    }
-                    is LoginUiState.Error -> {
-                        Log.e("xiebin", it.error.toString())
-                    }
-                    else -> {}
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                loginViewModel.uiState.map {
+                    it.user
+                }.distinctUntilChanged().collect {
+                    Log.e("xiebin2", it?.data?.get(0)?.first_name.toString())
                 }
             }
         }

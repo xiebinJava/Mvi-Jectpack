@@ -8,6 +8,10 @@ import com.fs.compose.login.data.model.User
 import com.fs.compose.login.data.repository.LoginRepository
 import com.fs.compose.login.domain.FormatDataUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
@@ -24,23 +28,21 @@ import javax.inject.Inject
  */
 
 
-sealed class LoginUiState : UiState {
-
-    object Idle : LoginUiState() // 单例模式
-    object Loading : LoginUiState() // 单例模式
-    data class UsersInfo(val user: User?) : LoginUiState()
-    data class CreateAccount(val user: User?) : LoginUiState()
-    data class Error(val error: String?) : LoginUiState()
-
-}
+ data class LoginState(
+    val loding: Boolean = false,
+    val user: User? = null,
+    val error: String? = ""
+) : UiState
 
 
 @HiltViewModel
-class LoginViewModel @Inject constructor (
+class LoginViewModel @Inject constructor(
     private val loginRepository: LoginRepository,
     private val formatDataUseCase: FormatDataUseCase
 ) :
-    BaseViewModel<LoginUiState, LoginActivity.UserEvent>() {
+    BaseViewModel<LoginState, LoginActivity.UserEvent>() {
+
+
 
     /**
      * 处理数据
@@ -49,13 +51,9 @@ class LoginViewModel @Inject constructor (
         viewModelScope.launch {
             val today = Calendar.getInstance()
             val formatDataUseCase1 = formatDataUseCase(today)
-            Log.e("xiebin",formatDataUseCase1.toString())
+            Log.e("xiebin", formatDataUseCase1.toString())
         }
 
-    }
-
-    override fun createInitialState(): LoginUiState {
-        return LoginUiState.Idle
     }
 
 
@@ -76,13 +74,15 @@ class LoginViewModel @Inject constructor (
 
     private fun createAccountAction() {
         viewModelScope.launch {
-            setState(LoginUiState.Loading)
-            try {
 
-                setState(LoginUiState.CreateAccount(loginRepository.getCreateAccount()))
+            setState { copy(loding = true) }
+            try {
+                val createAccount = loginRepository.getCreateAccount()
+                setState { copy(user = createAccount) }
             } catch (e: Exception) {
-                setState(LoginUiState.Error("错误"))
+                setState { copy(error = "错误") }
             }
+
         }
 
 
@@ -90,15 +90,20 @@ class LoginViewModel @Inject constructor (
 
     private fun loginAction() {
         viewModelScope.launch {
-
-            setState(LoginUiState.Loading)
+            setState { copy(loding = true) }
             try {
-                setState(LoginUiState.UsersInfo(loginRepository.getLogin()))
+                val login = loginRepository.getLogin()
+                setState { copy(user = login) }
             } catch (e: Exception) {
-                setState(LoginUiState.Error(e.message.toString()))
+                setState { copy(error = e.message.toString()) }
+                setState { copy(loding = false) }
             }
-
+            setState { copy(loding = false) }
         }
+
     }
 
+    override fun createInitialState(): LoginState {
+        return LoginState()
+    }
 }
